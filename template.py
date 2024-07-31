@@ -17,11 +17,11 @@ list_of_files = [
     f"src/{project_name}/constants/__init__.py",
     "config/config.yaml",
     "dvc.yaml",
-    "params.yaml"
+    "params.yaml",
     "requirments.txt",
     "setup.py",
     "research/trials.ipynb",
-
+    "templates/index.py"
 
 
 ]
