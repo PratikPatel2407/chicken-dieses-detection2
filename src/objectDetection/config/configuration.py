@@ -1,0 +1,41 @@
+from objectDetection import *
+from objectDetection.constants import *
+from objectDetection.utils.common import  read_yamal, create_directories
+import os
+from objectDetection.constants import *
+import urllib.request as request
+from objectDetection import logger
+from objectDetection.utils.common import get_size
+import zipfile
+from objectDetection.entity.config_entity import DataIngestionConfig
+from pathlib import Path
+
+
+class configurationManager:
+    def __init__(self,
+        config_filepath = CONFIG_FILE_PATH,
+        params_filepath = PARAMS_FILE_PATH):
+
+        self.config = read_yamal(config_filepath)
+        self.params = read_yamal(params_filepath)
+
+        create_directories([self.config.artifacts_root])
+
+
+    def get_data_ingestion_config(self) -> DataIngestionConfig:
+        config = self.config.data_ingestion
+        create_directories([config.root_dir])
+
+        data_ingestion_config = DataIngestionConfig(
+            root_dir= config.root_dir,
+            source_url= config.source_url,
+            local_data_file= config.local_data_file,
+            unzip_dir= config.unzip_dir
+        )
+
+        return data_ingestion_config
+
+
+
+
+
