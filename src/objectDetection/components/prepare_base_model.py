@@ -4,8 +4,7 @@ import urllib.request as request
 from zipfile import ZipFile
 from objectDetection.entity.config_entity import PrepareBaseModelConfig
 from pathlib import Path
-
-
+import tensorflow as tf
 class PrepareBaseModel:
     def __init__(self, config: PrepareBaseModelConfig):
         self.config = config
@@ -20,7 +19,7 @@ class PrepareBaseModel:
         self.save_model(path=self.config.base_model_path, model=self.model)
 
     @staticmethod
-    def prepare_full_model(model, classes, freeze_all, freeze_till, learning_rate):
+    def _prepare_full_model(model, classes, freeze_all, freeze_till, learning_rate):
         if freeze_all:
             for layer in model.layers:
                 model.trainable = False
@@ -31,7 +30,7 @@ class PrepareBaseModel:
         flatten_in = keras.layers.Flatten()(model.output)
         prediction = keras.layers.Dense(units=classes, activation="softmax")(flatten_in)
 
-        full_model = keras.models.Model(inputs=model.input, outputs = prediction)
+        full_model = tf.keras.models.Model(inputs=model.input, outputs = prediction)
 
         full_model.compile(
             optimizer = keras.optimizers.SGD(learning_rate=learning_rate),
@@ -42,9 +41,8 @@ class PrepareBaseModel:
         full_model.summary()
         return full_model
 
-
     def update_base_model(self):
-        self.full_model = self.prepare_full_model(
+        self.full_model = self._prepare_full_model(
             model=self.model,
             classes=self.config.params_classes,
             freeze_all=True,
@@ -52,10 +50,11 @@ class PrepareBaseModel:
             learning_rate=self.config.params_learning_rate
         )
 
-        self.save_model(path = self.config.updated_base_model_path, model =self.full_model)
-
+        self.save_model(path=self.config.updated_base_model_path, model=self.full_model)
 
     @staticmethod
-    def save_model(path: Path, model= keras.Model):
+    def save_model(path: Path, model= tf.keras.Model):
         model.save(path)
 
+
+#
